@@ -143,7 +143,7 @@ type domainAnswer struct {
 	id     uint16
 	domain string
 	ips    []net.IP
-	raw    string
+	raw    []string
 }
 
 func do_map_guard(domains <-chan string,
@@ -183,7 +183,7 @@ func do_map_guard(domains <-chan string,
 			timeoutRegister <- dr
 			tryResolving <- dr
 
-/*
+
 		case dr := <-timeoutExpired:
 			if m[dr.id] == dr {
 				dr.resend += 1
@@ -195,7 +195,7 @@ func do_map_guard(domains <-chan string,
 				timeoutRegister <- dr
 				tryResolving <- dr
 			}
-*/
+
 
 		case da := <-resolved:
 			if m[da.id] != nil {
@@ -205,6 +205,7 @@ func do_map_guard(domains <-chan string,
 						fmt.Fprintf(os.Stderr, "0x%04x error, unrecognized domain: %s != %s\n",
 							da.id, dr.domain, da.domain)
 					}
+					delete(m, dr.id)
 					break
 				}
 
